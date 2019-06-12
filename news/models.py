@@ -2,17 +2,7 @@ from django.db import models
 import datetime as dt 
 # Create your models here.class Editor(models.Model):
 
-@classmethod
-    def todays_news(cls):
-        today = dt.date.today()
-        news = cls.objects.filter(pub_date__date = today)
-        return news
-
- @classmethod
-    def days_news(cls,date):
-        news = cls.objects.filter(pub_date__date = date)
-        return news        
-
+     
 class Editor(models.Model):
     first_name = models.CharField(max_length =30)
     last_name = models.CharField(max_length =30)
@@ -39,3 +29,20 @@ class Article(models.Model):
     editor = models.ForeignKey(Editor)
     tags = models.ManyToManyField(tags)
     pub_date = models.DateTimeField(auto_now_add=True)
+    article_image = models.ImageField(upload_to = 'articles/')
+
+    @classmethod
+    def todays_news(cls):
+            today = dt.date.today()
+            news = cls.objects.filter(pub_date__date = today)
+            return news
+
+    @classmethod
+    def days_news(cls,date):
+            news = cls.objects.filter(pub_date__date = date)
+            return news
+
+    @classmethod
+    def search_by_title(cls,search_term):
+           news = cls.objects.filter(title__icontains=search_term)
+           return news       
