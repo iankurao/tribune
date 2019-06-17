@@ -4,7 +4,7 @@ from django.shortcuts import render,redirect
 from .models import Article,NewsLetterRecipients
 from .forms import NewsLetterForm 
 from .email import send_welcome_email 
-from django.contrib.auth.decorators import login_required.
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 # def welcome(request):
 #     return render(request, 'welcome.html')
