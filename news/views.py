@@ -5,6 +5,7 @@ from .models import Article,NewsLetterRecipients
 from .forms import  NewArticleForm,NewsLetterForm 
 from .email import send_welcome_email 
 from django.contrib.auth.decorators import login_required
+from django .http import JsonResponse 
 # Create your views here.
 # def welcome(request):
 #     return render(request, 'welcome.html')
@@ -14,35 +15,31 @@ from django.contrib.auth.decorators import login_required
 def news_today(request):
     date = dt.date.today()
     news = Article.todays_news()
+    form = NewsLetterForm()
 
-    if request.method == 'POST':
-        form = NewsLetterForm(request.POST)
-        if form.is_valid():
-            name = form.cleaned_data['your_name']
-            email = form.cleaned_data['email']
-            recipient = NewsLetterRecipients(name = name,email =email)
-            recipient.save()
-            send_welcome_email(name,email)
-            HttpResponseRedirect('news_today')
-    else:
-        form = NewsLetterForm()
+    # if request.method == 'POST':
+    #     form = NewsLetterForm(request.POST)
+    #     if form.is_valid():
+    #         name = form.cleaned_data['your_name']
+    #         email = form.cleaned_data['email']
+    #         recipient = NewsLetterRecipients(name = name,email =email)
+    #         recipient.save()
+    #         send_welcome_email(name,email)
+    #         HttpResponseRedirect('news_today')
+    # else:
+    #     form = NewsLetterForm()
     return render(request, 'all-news/today-news.html', {"date": date,"news":news,"letterForm":form})
 
+def newsletter(request):
+    name = request.POST.get('your_name')
+    email = request.POST.get('email')
 
+    recipient = NewsLetterRecipients(name=name, email=email)
+    recipient.save()
+    send_welcome_email(name, email)
+    data = {'success': 'You have been successfully added to mailing list'}
+    return JsonResponse(data)
 
-    # FUNCTION TO CONVERT DATE OBJECT TO FIND EXACT DAY
-   
-
-# def convert_dates(dates):
-    
-#     # Function that gets the weekday number for the date.
-#     day_number = dt.date.weekday(dates)
-
-#     days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday',"Sunday"]
-
-#     # Returning the actual day of the week
-#     day = days[day_number]
-#     return day    
 
 # View Function to present news from past days
 def past_days_news(request,past_date):
@@ -96,4 +93,4 @@ def new_article(request):
 
     else:
         form = NewArticleForm()
-    return render(request, 'new_article.html', {"form": form})
+    return render(request, "all-news/new_article.html", {"form": form})
